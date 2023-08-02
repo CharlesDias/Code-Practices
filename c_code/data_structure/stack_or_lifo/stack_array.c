@@ -9,7 +9,9 @@ Basic operations on stack:
 - is_empty to return true if the stack is empty or false, otherwise.
 - is_full to return true if the stack is full or false, otherwise.
 
-NOTE: Memory leak analysis.
+NOTE: 
+Memory leak analysis.
+
 1. Install the Valgrind on Ubuntu.
 2. Access the repository folder.
 3. Compile the project and runs the command below.
