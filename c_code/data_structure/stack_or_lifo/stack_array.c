@@ -8,7 +8,21 @@ Basic operations on stack:
 - peek to return the element on the top of the stack.
 - is_empty to return true if the stack is empty or false, otherwise.
 - is_full to return true if the stack is full or false, otherwise.
-- size to return the size of stack.
+
+NOTE: Memory leak analysis.
+1. Install the Valgrind on Ubuntu.
+2. Access the repository folder.
+3. Compile the project and runs the command below.
+
+valgrind --leak-check=full -v ./c_code/data_structure/stack_or_lifo/stack_array
+
+The expected output is
+
+...
+==8783== All heap blocks were freed -- no leaks are possible
+==8783== 
+==8783== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
 */
 
 #include <stdio.h>
@@ -17,12 +31,12 @@ Basic operations on stack:
 #include <assert.h>
 
 typedef struct {
-    unsigned int size;
+    unsigned int capacity;
     int top;
     int *array;
 }stack_t;
 
-stack_t* STACK_create(unsigned int size);
+stack_t* STACK_create(unsigned int capacity);
 void STACK_delete(stack_t* me);
 bool STACK_is_empty(stack_t *me);
 bool STACK_is_full(stack_t *me);
@@ -32,8 +46,8 @@ bool STACK_peek(stack_t *me, int *value);
 
 int main(int argc, char** argv)
 {
-   const unsigned int size = 32;
-   stack_t *s1 = STACK_create(size);
+   const unsigned int capacity = 32;
+   stack_t *s1 = STACK_create(capacity);
 
    if(s1 == NULL)
    {
@@ -44,7 +58,7 @@ int main(int argc, char** argv)
     printf("Stack is empty? %s\n", STACK_is_empty(s1) ? "true" : "false");
     printf("Stack is full?  %s\n\n", STACK_is_full(s1) ? "true" : "false");
 
-    for(int index = 0; index < size; index++)
+    for(int index = 0; index < capacity; index++)
     {
         STACK_push(s1, index + 1);
     }
@@ -56,7 +70,7 @@ int main(int argc, char** argv)
     printf("Stack is full?  %s\n\n", STACK_is_full(s1) ? "true" : "false");
 
 
-    for(int index = 0; index < size; index++)
+    for(int index = 0; index < capacity; index++)
     {
         STACK_pop(s1, &temp);
         printf("POP %2d = %2d\n", index, temp);
@@ -71,9 +85,9 @@ int main(int argc, char** argv)
     return 0;
 }
 
-stack_t* STACK_create(unsigned int size)
+stack_t* STACK_create(unsigned int capacity)
 {
-    assert(size != 0);
+    assert(capacity != 0);
 
     stack_t *me = (stack_t *)malloc(sizeof(stack_t));
     if(me == NULL)
@@ -81,14 +95,14 @@ stack_t* STACK_create(unsigned int size)
         return NULL;
     }
 
-    me->array = (int *)calloc(size, sizeof(int));
+    me->array = (int *)calloc(capacity, sizeof(int));
 
     if(me->array == NULL)
     {
         free(me);
         return NULL;
     }
-    me->size = size;
+    me->capacity = capacity;
     me->top = -1;
     return me;
 }
@@ -112,7 +126,7 @@ bool STACK_is_full(stack_t *me)
 {
     assert(me != NULL);
 
-    return me->top == me->size - 1;
+    return me->top == me->capacity - 1;
 }
 
 bool STACK_push(stack_t *me, int value)
